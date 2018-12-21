@@ -1,2 +1,3 @@
 # chatbox
-:cry
+:smile:
+
