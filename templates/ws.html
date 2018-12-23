@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+</head>
+<body>
+<p>您的昵称：<input type="text" id="nick">
+    <button onclick="openws()">进入聊天室</button>
+</p>
+<p>给<input type="text" id="to_user">发送：<input type="text" id="message">
+    <button onclick="send_msg()">发送消息</button>
+</p>
+<div id="msg_list" style="width: 500px;">
+</div>
+<script type="application/javascript">
+    var ws = null;
+
+    function openws() {
+        var nick = document.getElementById("nick").value;
+        ws = new WebSocket("ws://192.168.12.13:5000/ws/"+nick);
+        ws.onmessage = function (ws_status) {
+            console.log(ws_status.data);
+            var msg_obj = JSON.parse(ws_status.data);
+            var ptag = document.createElement("p");
+            ptag.innerText = msg_obj.from_user + " : " + msg_obj.msg;
+            document.getElementById("msg_list").appendChild(ptag);
+        };
+    }
+
+    function send_msg() {
+        var msg = document.getElementById("message").value;
+        var from_user = document.getElementById("nick").value;
+        var to_user = document.getElementById("to_user").value;
+        var ptag = document.createElement("p");
+        ptag.style.cssText = "text-align: right;";
+        ptag.innerText = msg + " : " + from_user;
+        document.getElementById("msg_list").appendChild(ptag);
+        var msg_obj = {
+            msg: msg,
+            from_user: from_user,
+            to_user: to_user
+        };
+        ws.send(JSON.stringify(msg_obj));
+    };
+
+</script>
+</body>
+</html>
